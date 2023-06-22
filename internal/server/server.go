@@ -4,6 +4,7 @@ import (
 	"context"
 
 	api "github.com/covan/proglog/api/v1"
+	"google.golang.org/grpc"
 )
 
 type Config struct {
@@ -12,14 +13,31 @@ type Config struct {
 
 var _ api.LogServer = (*grpcServer)(nil)
 
+func NewGRPCServer(config *Config, opts ...grpc.ServerOption) (
+	*grpc.Server,
+	error,
+) {
+	gsrv := grpc.NewServer(opts...)
+	srv, err := newgrpcServer(config)
+	if err != nil {
+		return nil, err
+	}
+	api.RegisterLogServer(gsrv, srv)
+	return gsrv, nil
+}
+
 type grpcServer struct {
 	api.UnimplementedLogServer
 	*Config
 }
+type CommitLog interface {
+	Append(*api.Record) (uint64, error)
+	Read(uint64) (*api.Record, error)
+}
 
 func newgrpcServer(config *Config) (srv *grpcServer, err error) {
 	srv = &grpcServer{
-		Config: config.CommitLog,
+		Config: config,
 	}
 	return srv, nil
 }
