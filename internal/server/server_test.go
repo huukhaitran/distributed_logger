@@ -11,7 +11,7 @@ import (
 
 	"github.com/covan/proglog/internal/auth"
 	"github.com/covan/proglog/internal/config"
-	"github.com/covan/proglog/internal/server/log"
+	"github.com/covan/proglog/internal/log"
 	"go.opencensus.io/examples/exporter"
 
 	api "github.com/covan/proglog/api/v1"
